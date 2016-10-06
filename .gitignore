@@ -2,4 +2,4 @@
 /venv
 /templates/useless
 t_*
-
+*.pyc
