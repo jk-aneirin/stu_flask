@@ -7,3 +7,7 @@ class EmailPasswordForm(Form):
     email = StringField('Email',validators=[DataRequired()])
     password = PasswordField('Password',validators=[DataRequired()])
     submit = SubmitField('Submit')
+
+class TForm(Form):
+    name = StringField('Name')
+    submit = SubmitField('Submit')

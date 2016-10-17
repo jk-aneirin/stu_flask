@@ -1,0 +1,6 @@
+the packages you must install:
+flask-sqlalchemy
+flask-wtf
+flask-script
+NOTE:
+table must have primary key when using ORM
