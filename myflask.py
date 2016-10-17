@@ -12,10 +12,11 @@ manager.add_command("runserver",Server(host="0.0.0.0",port=5000))
 db=SQLAlchemy(app)
 
 class Userinfo(db.Model):
-    __tablename__='userinfo'
-    id = db.Column(db.Integer, primary_key=True)
-    email=db.Column(db.Integer)
-    password=db.Column(db.String(128),unique=True)
+    __tablename__ = 'userinfo'
+    id = db.Column(db.Integer, primary_key = True)
+    username = db.Column(db.String(30))
+    password = db.Column(db.String(128),unique = True)
+    email = db.Column(db.String(128),unique = True)
 
 @app.route('/')
 def index():
