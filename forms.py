@@ -4,8 +4,11 @@ from wtforms.validators import DataRequired,Email
 
 
 class EmailPasswordForm(Form):
-    email = StringField('Email',validators=[DataRequired()])
+
+    id = StringField('ID',validators=[DataRequired()])
+    username = StringField('Username',validators=[DataRequired()])
     password = PasswordField('Password',validators=[DataRequired()])
+    email = StringField('Email',validators=[DataRequired()])
     submit = SubmitField('Submit')
 
 class TForm(Form):

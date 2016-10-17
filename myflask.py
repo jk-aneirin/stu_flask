@@ -18,6 +18,9 @@ class Userinfo(db.Model):
     password = db.Column(db.String(128),unique = True)
     email = db.Column(db.String(128),unique = True)
 
+    def __repr__(self):
+        return '<Userinfo %r>' % self.username
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -26,12 +29,14 @@ def index():
 def login():
     form = EmailPasswordForm()
     if form.validate_on_submit():
-        #add authenticate step
-        if app.config['EMAIL']==form.email.data and\
-                app.config['PASSWORD']==form.password.data:
-            return render_template('loginok.html')
+        user = Userinfo.query.filter_by(username=form.username.data).first()
+        if user is None:
+            flash('Hello the New!')
+            user=Userinfo(id=form.id.data,username=form.username.data,\
+                    password=form.password.data,email=form.email.data)
+            db.session.add(user)
         else:
-            flash('EMAIL or PASSWORD wrong')
+            return render_template('loginok.html')
     return render_template('login.html',form=form)
 
 if __name__ == '__main__':
