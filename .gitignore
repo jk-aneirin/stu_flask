@@ -1,5 +1,6 @@
 /useless
 /venv
 /templates/useless
+/utils/useless
 t_*
 *.pyc
