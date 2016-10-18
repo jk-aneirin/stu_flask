@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block body%}
+<form action="{{ url_for("pwdreset") }}" method="POST">
+    <label>UserName</label>
+	<input type="text" name="username" /><br>
+    <label>NewPwd</label>
+	<input type="text" name="newpwd" /><br>
+	<input type="submit" name="submit" />
+    {{ form.csrf_token }}
+</form>
+{% endblock %}

@@ -1,5 +1,5 @@
 from flask import Flask,render_template,redirect,url_for,flash
-from forms import Register,Login
+from forms import Register,Login,PwdResetRequest,PwdReset
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_script import Manager,Server
@@ -49,7 +49,32 @@ def register():
             db.session.add(user)
         else:
             return redirect(url_for('registered'))
-    return render_template('register.html',form=registerform)
+    return render_template('register.html',form = registerform)
+
+@app.route('/pwdresetreq',methods = ['GET','POST'])
+def pwdresetreq():
+    form = PwdResetRequest()
+    if form.validate_on_submit():
+        email = Userinfo.query.filter_by(email=form.email.data).first()
+        if email is None:
+            flash('Email is None in DB')
+            return redirect(url_for('index'))
+        else:
+            return redirect(url_for('pwdreset'))
+    return render_template('pwdresetreq.html',form = form)
+
+@app.route('/pwdreset',methods = ['GET','POST'])
+def pwdreset():
+    form = PwdReset()
+    if form.validate_on_submit():
+        user = Userinfo.query.filter_by(username = form.username.data).first()
+        if user is None:
+            flash('username is None in DB')
+        else:
+            user.password = form.newpwd.data
+            db.session.add(user)
+            flash('update password successfully')
+    return render_template('pwdreset.html',form = form)
 
 @app.route('/registered')
 def registered():

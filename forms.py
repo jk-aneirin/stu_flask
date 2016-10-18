@@ -15,3 +15,12 @@ class Login(Form):
     username = StringField('Username')
     password = PasswordField('Password')
     submit = SubmitField('Submit')
+
+class PwdResetRequest(Form):
+    email = StringField('Email')
+    submit = SubmitField('Submit')
+
+class PwdReset(Form):
+    username = StringField('Email')
+    newpwd = PasswordField('Password')
+    submit = SubmitField('Submit')

@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block body%}
+<form action="{{ url_for("pwdresetreq") }}" method="POST">
+	<label>Email</label>
+	<input type="text" name="email" /><br>
+	<input type="submit" name="submit" />
+    {{ form.csrf_token }}
+</form>
+{% endblock %}
