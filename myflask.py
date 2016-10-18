@@ -66,9 +66,7 @@ def pwdresetreq():
             token = ts.dumps(form.email.data,salt='email-confirm-key')
             confirm_url = url_for('confirm_email',token = token,_external = True)
             html = render_template('activate.html',confirm_url=confirm_url)
-            #SendMail().sendm(form.email.data,html)
             SendMail().sendm(form.email.data,confirm_url)
-            #return redirect(url_for('pwdreset'))
             flash('Email has been sended,please checkout your mailbox')
     return render_template('pwdresetreq.html',form = form)
 
