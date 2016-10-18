@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block body%}
+<form action="{{ url_for("register") }}" method="POST">
+    <label>ID</label>
+    <input type="text" name="id" /><br>
+    <label>UserName</label>
+    <input type="text" name="username" /><br>
+    <label>Password</label>
+    <input type="password" name="password" /><br>
+    <label>Email</label>
+    <input type="text" name="email" /><br>
+    <input type="submit" name="submit" />
+    {{ form.csrf_token }}
+</form>
+{% endblock %}

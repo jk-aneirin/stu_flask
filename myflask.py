@@ -1,5 +1,5 @@
 from flask import Flask,render_template,redirect,url_for,flash
-from forms import EmailPasswordForm
+from forms import Register,Login
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_script import Manager,Server
@@ -15,7 +15,7 @@ class Userinfo(db.Model):
     __tablename__ = 'userinfo'
     id = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String(30))
-    password = db.Column(db.String(128),unique = True)
+    password = db.Column(db.String(128))
     email = db.Column(db.String(128),unique = True)
 
     def __repr__(self):
@@ -27,17 +27,36 @@ def index():
 
 @app.route('/login',methods=['GET','POST'])
 def login():
-    form = EmailPasswordForm()
-    if form.validate_on_submit():
-        user = Userinfo.query.filter_by(username=form.username.data).first()
+    loginform = Login()
+    if loginform.validate_on_submit():
+        user = Userinfo.query.filter_by(username=loginform.username.data).first()
+        if user is None:
+            return redirect(url_for('register'))
+        else:
+            return redirect(url_for('loginok'))
+    return render_template('login.html',form=loginform)
+
+@app.route('/register',methods=['GET','POST'])
+def register():
+    registerform = Register()
+    if registerform.validate_on_submit():
+        user = Userinfo.query.filter_by(username=registerform.username.data).first()
         if user is None:
             flash('Hello the New!')
-            user=Userinfo(id=form.id.data,username=form.username.data,\
-                    password=form.password.data,email=form.email.data)
+            user=Userinfo(id=registerform.id.data,username=registerform.username.data,\
+                    password=registerform.password.data,email=registerform.email.data)
             db.session.add(user)
         else:
-            return render_template('loginok.html')
-    return render_template('login.html',form=form)
+            return redirect(url_for('registered'))
+    return render_template('register.html',form=registerform)
+
+@app.route('/registered')
+def registered():
+    return render_template('registered.html')
+
+@app.route('/loginok')
+def loginok():
+    return render_template('loginok.html')
 
 if __name__ == '__main__':
     db.create_all()

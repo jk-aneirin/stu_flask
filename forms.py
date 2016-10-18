@@ -3,14 +3,15 @@ from wtforms import StringField,PasswordField,SubmitField
 from wtforms.validators import DataRequired,Email
 
 
-class EmailPasswordForm(Form):
+class Register(Form):
 
     id = StringField('ID',validators=[DataRequired()])
     username = StringField('Username',validators=[DataRequired()])
-    password = PasswordField('Password',validators=[DataRequired()])
-    email = StringField('Email',validators=[DataRequired()])
+    password = PasswordField('Password')
+    email = StringField('Email')
     submit = SubmitField('Submit')
 
-class TForm(Form):
-    name = StringField('Name')
+class Login(Form):
+    username = StringField('Username')
+    password = PasswordField('Password')
     submit = SubmitField('Submit')

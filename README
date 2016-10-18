@@ -4,3 +4,4 @@ flask-wtf
 flask-script
 NOTE:
 table must have primary key when using ORM
+templates/login.html must add csrf otherwise redirect will fail
