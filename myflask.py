@@ -32,6 +32,11 @@ class Userinfo(db.Model):
     def _set_password(self,plaintext):
         self.password = bcrypt.generate_password_hash(plaintext)
 
+    def validate_pwd(self,plaintext):
+        if bcrypt.check_password_hash(self.password,plaintext):
+            return True
+        return False
+
     def __repr__(self):
         return '<Userinfo %r>' % self.username
 
@@ -45,9 +50,14 @@ def login():
     if loginform.validate_on_submit():
         user = Userinfo.query.filter_by(username=loginform.username.data).first()
         if user is None:
-            return redirect(url_for('register'))
+            flash('Username does not exist!')
+            return redirect(url_for('index'))
         else:
-            return redirect(url_for('loginok'))
+            if user.validate_pwd(loginform.password.data):
+                return redirect(url_for('loginok'))
+            else:
+                #redirect(url_for('register'))
+                flash('Wrong password,please try again!')
     return render_template('login.html',form=loginform)
 
 @app.route('/register',methods=['GET','POST'])
