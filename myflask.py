@@ -1,15 +1,18 @@
 from flask import Flask,render_template,redirect,url_for,flash
 from forms import Register,Login,PwdResetRequest,PwdReset
+from utils.smail import SendMail
+from itsdangerous import URLSafeTimedSerializer
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_script import Manager,Server
 
-app=Flask(__name__)
+app = Flask(__name__)
 app.config.from_pyfile('config.py')
 Bootstrap(app)
 manager = Manager(app)
 manager.add_command("runserver",Server(host="0.0.0.0",port=5000))
-db=SQLAlchemy(app)
+db = SQLAlchemy(app)
+ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
 
 class Userinfo(db.Model):
     __tablename__ = 'userinfo'
@@ -55,12 +58,18 @@ def register():
 def pwdresetreq():
     form = PwdResetRequest()
     if form.validate_on_submit():
-        email = Userinfo.query.filter_by(email=form.email.data).first()
-        if email is None:
+        user = Userinfo.query.filter_by(email=form.email.data).first()
+        if user is None:
             flash('Email is None in DB')
             return redirect(url_for('index'))
         else:
-            return redirect(url_for('pwdreset'))
+            token = ts.dumps(form.email.data,salt='email-confirm-key')
+            confirm_url = url_for('confirm_email',token = token,_external = True)
+            html = render_template('activate.html',confirm_url=confirm_url)
+            #SendMail().sendm(form.email.data,html)
+            SendMail().sendm(form.email.data,confirm_url)
+            #return redirect(url_for('pwdreset'))
+            flash('Email has been sended,please checkout your mailbox')
     return render_template('pwdresetreq.html',form = form)
 
 @app.route('/pwdreset',methods = ['GET','POST'])
@@ -75,6 +84,15 @@ def pwdreset():
             db.session.add(user)
             flash('update password successfully')
     return render_template('pwdreset.html',form = form)
+
+@app.route('/confirm/<token>')
+def confirm_email(token):
+    try:
+        email = ts.loads(token,salt="email-confirm-key")
+    except:
+        abort(404)
+    user = ts.loads(token, salt="email-confirm-key", max_age=86400)
+    return redirect(url_for('pwdreset'))
 
 @app.route('/registered')
 def registered():
