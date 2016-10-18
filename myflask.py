@@ -43,6 +43,7 @@ def register():
         user = Userinfo.query.filter_by(username=registerform.username.data).first()
         if user is None:
             flash('Hello the New!')
+
             user=Userinfo(id=registerform.id.data,username=registerform.username.data,\
                     password=registerform.password.data,email=registerform.email.data)
             db.session.add(user)
