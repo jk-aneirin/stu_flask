@@ -4,7 +4,9 @@ from utils.smail import SendMail
 from itsdangerous import URLSafeTimedSerializer
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.ext.hybrid import hybrid_property
 from flask_script import Manager,Server
+from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -12,6 +14,7 @@ Bootstrap(app)
 manager = Manager(app)
 manager.add_command("runserver",Server(host="0.0.0.0",port=5000))
 db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
 ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
 
 class Userinfo(db.Model):
@@ -20,6 +23,14 @@ class Userinfo(db.Model):
     username = db.Column(db.String(30))
     password = db.Column(db.String(128))
     email = db.Column(db.String(128),unique = True)
+
+    @hybrid_property
+    def pwd(self):
+        return self.password
+
+    @pwd.setter
+    def _set_password(self,plaintext):
+        self.password = bcrypt.generate_password_hash(plaintext)
 
     def __repr__(self):
         return '<Userinfo %r>' % self.username
@@ -48,7 +59,7 @@ def register():
             flash('Hello the New!')
 
             user=Userinfo(id=registerform.id.data,username=registerform.username.data,\
-                    password=registerform.password.data,email=registerform.email.data)
+                    pwd=registerform.password.data,email=registerform.email.data)
             db.session.add(user)
         else:
             return redirect(url_for('registered'))
