@@ -22,7 +22,7 @@ class Userinfo(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String(30))
     password = db.Column(db.String(128))
-    email = db.Column(db.String(128),unique = True)
+    email = db.Column(db.String(128))
 
     @hybrid_property
     def pwd(self):
@@ -99,7 +99,7 @@ def pwdreset():
         if user is None:
             flash('username is None in DB')
         else:
-            user.password = form.newpwd.data
+            user.pwd = form.newpwd.data
             db.session.add(user)
             flash('update password successfully')
     return render_template('pwdreset.html',form = form)

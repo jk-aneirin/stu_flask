@@ -1,9 +1,9 @@
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import StringField,PasswordField,SubmitField
 from wtforms.validators import DataRequired,Email
 
 
-class Register(Form):
+class Register(FlaskForm):
 
     id = StringField('ID',validators=[DataRequired()])
     username = StringField('Username',validators=[DataRequired()])
@@ -11,16 +11,16 @@ class Register(Form):
     email = StringField('Email')
     submit = SubmitField('Submit')
 
-class Login(Form):
+class Login(FlaskForm):
     username = StringField('Username')
     password = PasswordField('Password')
     submit = SubmitField('Submit')
 
-class PwdResetRequest(Form):
+class PwdResetRequest(FlaskForm):
     email = StringField('Email')
     submit = SubmitField('Submit')
 
-class PwdReset(Form):
+class PwdReset(FlaskForm):
     username = StringField('Email')
     newpwd = PasswordField('Password')
     submit = SubmitField('Submit')
