@@ -1,5 +1,5 @@
 from flask import Flask,render_template,redirect,url_for,flash,session,abort,request
-from forms import Register,Login,PwdResetRequest,PwdReset,Blogs
+from forms import Register,Login,PwdResetRequest,PwdReset
 from utils.smail import SendMail
 from itsdangerous import URLSafeTimedSerializer
 from flask_bootstrap import Bootstrap
