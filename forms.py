@@ -24,3 +24,8 @@ class PwdReset(FlaskForm):
     username = StringField('Email')
     newpwd = PasswordField('Password')
     submit = SubmitField('Submit')
+
+class Blogs(FlaskForm):
+    title = StringField('Title')
+    blog = StringField('Blog')
+    submit = SubmitField('Submit')

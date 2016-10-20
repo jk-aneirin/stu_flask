@@ -1,5 +1,5 @@
-from flask import Flask,render_template,redirect,url_for,flash
-from forms import Register,Login,PwdResetRequest,PwdReset
+from flask import Flask,render_template,redirect,url_for,flash,session,abort,request
+from forms import Register,Login,PwdResetRequest,PwdReset,Blogs
 from utils.smail import SendMail
 from itsdangerous import URLSafeTimedSerializer
 from flask_bootstrap import Bootstrap
@@ -40,9 +40,20 @@ class Userinfo(db.Model):
     def __repr__(self):
         return '<Userinfo %r>' % self.username
 
+class Entries(db.Model):
+    __tablename__ = 'entries'
+    id = db.Column(db.Integer,primary_key = True,\
+            autoincrement = True)
+    title = db.Column(db.String(128),nullable=False)
+    blog = db.Column(db.Text,nullable=False)
+
+    def __repr__(self):
+        return '<Entries %r>' % self.title
+
 @app.route('/')
 def index():
-    return render_template('index.html')
+    entries = Entries.query.all()
+    return render_template('show_entries.html',entries = entries)
 
 @app.route('/login',methods=['GET','POST'])
 def login():
@@ -51,14 +62,36 @@ def login():
         user = Userinfo.query.filter_by(username=loginform.username.data).first()
         if user is None:
             flash('Username does not exist!')
-            return redirect(url_for('index'))
         else:
             if user.validate_pwd(loginform.password.data):
-                return redirect(url_for('loginok'))
+                session['logged_in'] = True
+                return redirect(url_for('index'))
             else:
-                #redirect(url_for('register'))
                 flash('Wrong password,please try again!')
     return render_template('login.html',form=loginform)
+
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    flash('You were logged out')
+    return redirect(url_for('index'))
+
+@app.route('/add',methods = ['POST','GET'])
+def add_entry():
+    if not session.get('logged_in'):
+        abort(401)
+    #form = Blogs()
+#    if form.validate_on_submit():
+#        #entry = Entries(title=form.title.data,blog=form.blog.data)
+#        entry = Entries(title=request.form['title'],blog=request.form['text'])
+#        db.session.add(entry)
+#        flash('New blog was successfully posted')
+    entry = Entries(title=request.form['title'],blog=request.form['text'])
+    db.session.add(entry)
+    flash('New blog was successfully posted')
+    return redirect(url_for('index'))
+
+
 
 @app.route('/register',methods=['GET','POST'])
 def register():
@@ -117,9 +150,6 @@ def confirm_email(token):
 def registered():
     return render_template('registered.html')
 
-@app.route('/loginok')
-def loginok():
-    return render_template('loginok.html')
 
 if __name__ == '__main__':
     db.create_all()
